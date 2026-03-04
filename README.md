@@ -25,4 +25,18 @@ Unlike standard trackers, this project focuses on **Habit Awareness**. It provid
 ### 1. Update your local files
 Before starting work, always pull the latest changes from the team.
 ```bash
+
+what to work on:
+
+auto show             :
+manual show           : doneish
+reader/editor         :
+sorting               :
+finished/not started  :
+recomendations        :
+stats                 :
+sharing function      :
+might be more
+
+
 git pull origin main
