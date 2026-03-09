@@ -29,9 +29,9 @@ Before starting work, always pull the latest changes from the team.
 what to work on:
 
 auto show             :
-manual show           : doneish
+manual show           : done
 reader/editor         :
-sorting               :
+sorting               : jouse
 finished/not started  :
 recomendations        :
 stats                 :
