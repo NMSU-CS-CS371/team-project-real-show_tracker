@@ -1,12 +1,11 @@
-import java.io.*;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class list {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws SQLException {
         Scanner scan = new Scanner(System.in);
-
         System.out.println("Enter the name of the show/movie:");
         String name = scan.nextLine();
 
@@ -29,9 +28,7 @@ public class list {
             System.out.println("How long is the movie? (in minutes)");
             episodeLength = getNonNegativeInt(scan);
             seasonEpisodes.add(1);
-
         } else {
-            // Just ask how many seasons directly
             System.out.println("How many seasons are there?");
             int numSeasons = getNonNegativeInt(scan);
 
@@ -45,43 +42,83 @@ public class list {
             episodeLength = getNonNegativeInt(scan);
         }
 
-        File file = new File("shows.csv");
+        String url = "jdbc:sqlite:shows.sql";
+        try (Connection conn = DriverManager.getConnection(url)) {
 
-        if (!file.exists()) {
-            PrintWriter pw = new PrintWriter(new FileWriter(file));
-            pw.println("Show Name,Abbreviation,Type,Avg Episode Length (mins),Date Entered,Last Updated,Season,Episodes,Watched");
-            pw.close();
+            createTablesIfNeeded(conn);
+
+            int showId = insertShow(conn, name, abbreviation, type, episodeLength, dateEntered);
+
+            String firstSeasonLabel = type.equals("movie") ? "Movie" : "Season 1";
+            insertSeason(conn, showId, firstSeasonLabel, seasonEpisodes.get(0));
+
+            for (int i = 1; i < seasonEpisodes.size(); i++) {
+                insertSeason(conn, showId, "Season " + (i + 1), seasonEpisodes.get(i));
+            }
         }
 
-        PrintWriter pw = new PrintWriter(new FileWriter(file, true));
-
-        String firstSeason = type.equals("movie") ? "Movie" : "Season 1";
-        pw.println(
-            "\"" + name + "\"," +
-            abbreviation + "," +
-            type + "," +
-            episodeLength + "," +
-            dateEntered + "," +
-            dateEntered + "," +
-            firstSeason + "," +
-            seasonEpisodes.get(0) + "," +
-            "0"
-        );
-
-        for (int i = 1; i < seasonEpisodes.size(); i++) {
-            pw.println(
-                ",,,,,," +
-                "Season " + (i + 1) + "," +
-                seasonEpisodes.get(i) + "," +
-                "0"
-            );
-        }
-
-        pw.println(",,,,,,,,,");
-        pw.close();
-
-        System.out.println("\n\"" + name + "\" saved to shows.csv!");
+        System.out.println("\n\"" + name + "\" saved to shows.db!");
         scan.close();
+    }
+
+    private static void createTablesIfNeeded(Connection conn) throws SQLException {
+        String createShows =
+            "CREATE TABLE IF NOT EXISTS shows (" +
+            "  id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "  name TEXT NOT NULL," +
+            "  abbreviation TEXT," +
+            "  type TEXT," +
+            "  avg_episode_length_mins INTEGER," +
+            "  date_entered TEXT," +
+            "  last_updated TEXT" +
+            ");";
+
+        String createSeasons =
+            "CREATE TABLE IF NOT EXISTS seasons (" +
+            "  id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "  show_id INTEGER NOT NULL," +
+            "  season_label TEXT," +
+            "  episodes INTEGER," +
+            "  watched INTEGER DEFAULT 0," +
+            "  FOREIGN KEY (show_id) REFERENCES shows(id)" +
+            ");";
+
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(createShows);
+            stmt.execute(createSeasons);
+        }
+    }
+
+    private static int insertShow(Connection conn, String name, String abbreviation,
+                                   String type, int episodeLength, String date) throws SQLException {
+        String sql =
+            "INSERT INTO shows (name, abbreviation, type, avg_episode_length_mins, date_entered, last_updated) " +
+            "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, name);
+            ps.setString(2, abbreviation);
+            ps.setString(3, type);
+            ps.setInt(4, episodeLength);
+            ps.setString(5, date);
+            ps.setString(6, date);
+            ps.executeUpdate();
+
+            ResultSet keys = ps.getGeneratedKeys();
+            if (keys.next()) return keys.getInt(1);
+        }
+        throw new SQLException("Failed to retrieve generated show ID.");
+    }
+
+    private static void insertSeason(Connection conn, int showId,
+                                      String label, int episodes) throws SQLException {
+        String sql = "INSERT INTO seasons (show_id, season_label, episodes, watched) VALUES (?, ?, ?, 0)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, showId);
+            ps.setString(2, label);
+            ps.setInt(3, episodes);
+            ps.executeUpdate();
+        }
     }
 
     private static String generateAbbreviation(String name) {
