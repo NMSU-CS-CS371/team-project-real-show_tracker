@@ -31,7 +31,7 @@ what to work on:
 auto show             :
 manual show           : done
 reader/editor         :
-sorting               : jouse
+sorting               : josue
 finished/not started  :
 recomendations        :
 stats                 :
