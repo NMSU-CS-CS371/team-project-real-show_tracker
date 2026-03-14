@@ -1,3 +1,22 @@
+# show tracker: a library for all your shows and movies
+welcome to showtracker a libary for all your shows and movies
+# what is show tracker?
+show tracker tracks shows and movies for you removing them from streaming services
+this is because streaming services can change they can remove and add shows
+this is a libary detached from them and can only be changed by you the user
+
+# features of show tracker
+can store all shows and movies
+easily find shows and movies
+can auto input shows you search or if not possibe an manual input, auto reccomended but can bypass to make it manual anyways
+-more features in development-
+
+# team
+Josue Pena
+Matthew Nichols
+Scottie Dunnavan
+
+
 # team-project-real-show_tracker
 
 # Show Tracker: Cross-Platform Media Analytics
