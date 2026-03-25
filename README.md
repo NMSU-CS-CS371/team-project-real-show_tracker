@@ -49,8 +49,8 @@ what to work on:
 
 auto show             :
 manual show           : done
-reader/editor         :
-sorting               : josue
+reader/editor         : josue
+sorting               : done
 finished/not started  :
 recomendations        :
 stats                 :
