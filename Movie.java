@@ -1,9 +1,9 @@
 public class Movie {
     public String title;
-    public int year;
-    public String director;
+    public int year = 0;
+    public String director = "null";
     public int runtime;
-    public int simkl_id;
+    public int simkl_id = 0;
 
     
     public Movie(String title, int year, String director, int runtime, int simkl_id) {

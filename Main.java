@@ -30,7 +30,36 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("\n--- Auto Entry ---");
-                    autoShow.main(new String[]{});
+
+                    // ── Type ──────────────────────────────────────────────
+                    String type = "";
+                    while (!type.equals("movie") && !type.equals("show")) {
+                        System.out.print("Is this a movie or a show? (movie/show): ");
+                        type = scan.nextLine().toLowerCase().trim();
+                        System.out.println();
+                        if (!type.equals("movie") && !type.equals("show"))
+                            System.out.println("Please type exactly 'movie' or 'show'.");
+                    }
+                    System.out.print("Enter " + Character.toUpperCase(type.charAt(0)) + type.substring(1) + " Name: ");
+                    String query = scan.nextLine();
+                    System.out.println();
+
+                    if (type.equals("movie")) {
+                        Movie toAdd = autoShow.searchMovie(query);
+                        if (toAdd != null) {
+                            list.saveEntry(toAdd);
+                        } else {
+                            System.out.println("ERROR: No movie selected or search failed; nothing stored.");
+                        }
+                    } else {
+                        Show toAdd = autoShow.searchShow(query);
+                        if (toAdd != null) {
+                            list.saveEntry(toAdd);
+                        } else {
+                            System.out.println("ERROR: No show selected or search failed; nothing stored.");
+                        }
+                    }
+                    System.out.println(Character.toUpperCase(type.charAt(0)) + type.substring(1) + " Stored Correctly!");
                     break;
                 case 3:
                     System.out.println("\n--- Search ---");

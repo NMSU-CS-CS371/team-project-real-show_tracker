@@ -13,38 +13,11 @@ public class autoShow {
     private static final String API_KEY = "2b0f7839577335a21b806dc74d1375efc188a593077741c269a639e7d6006e74";
 
     public static void main(String[] args) throws Exception {
-        Scanner input = new Scanner(System.in);
-
-        System.out.println("Select Media Choice: ");
-        System.out.print("1. Movie" + "\n2. TV Show" + "\n3. Anime" + "\n\nCHOICE: ");
-        int choice = input.nextInt();
-        input.nextLine();
-
-        while (choice < 1 || choice > 3){
-            System.out.print("ERROR: Choice must be int between 1-3, try again" + "\nCHOICE:");
-            choice = input.nextInt();
-            input.nextLine();
-        }
-
-        String name = "";
-        if (choice == 1){ 
-            System.out.print("\nEnter Movie Name: ");
-            name = input.nextLine();
-            searchMovie(name);
-        }
-        if (choice == 2){
-            System.out.print("\nEnter Show Name: ");
-            name = input.nextLine();
-            searchShow(name);
-        }
-        if (choice == 3){
-            System.out.print("\nNot Yet Implemented...");
-        }
 
     }
 
 
-    public static void searchMovie(String query) throws Exception {
+    public static Movie searchMovie(String query) throws Exception {
         Scanner input = new Scanner(System.in);
 
         // Encode the search string
@@ -69,12 +42,13 @@ public class autoShow {
         if (response.statusCode() == 200) {
 
             JSONArray results = new JSONArray(response.body());
-            System.out.println("\n\n\nRESULTS RESULTS RESULTS RESULTS RESULTS\n\n\n" + results + "\n\n\n\n\n\n\n\n\n\n");
 
             if (results.length() == 0) {
                 System.out.println("No movies found.");
-                return;
+                return null;
             }
+
+            System.out.println("Results for \"" + query + "\":");
 
             // Loop through results
             for (int i = 0; i < results.length(); i++) {
@@ -92,22 +66,24 @@ public class autoShow {
 
             // make sure choice is in valid range based on number of results
             while (choice < 0 || choice > results.length()){
-                System.out.print("ERROR: Choice must be int between 0-" + results.length() + ", try again" + "\nCHOICE:");
+                System.out.print("ERROR: Choice must be int between 0-" + results.length() + ", try again\n" + "\nCHOICE: ");
                 choice = input.nextInt();
                 input.nextLine();
             }
 
             if (choice == 0) {
-                System.out.println("Movie not selected.");
-                return;
+                System.out.println("Movie not selected.\n");
+                manualShow.main(new String[0]);
+                return null;
             }
 
             JSONObject selectedMovie = results.getJSONObject(choice - 1);
-            createMovieObj(selectedMovie);
-            
+            Movie toReturn = createMovieObj(selectedMovie);
+            return toReturn;
 
         } else {
             System.out.println("Error: " + response.statusCode() + " ☹");
+            return null;
         }
     }
 
@@ -115,7 +91,7 @@ public class autoShow {
 
 
 
-    public static void searchShow(String query) throws Exception {
+    public static Show searchShow(String query) throws Exception {
         Scanner input = new Scanner(System.in);
 
         // Encode the search string
@@ -140,12 +116,14 @@ public class autoShow {
         if (response.statusCode() == 200) {
 
             JSONArray results = new JSONArray(response.body());
-            System.out.println("\n\n\nRESULTS RESULTS RESULTS RESULTS RESULTS\n\n\n" + results + "\n\n\n\n\n\n\n\n\n\n");
-
+            
             if (results.length() == 0) {
                 System.out.println("No shows found.");
-                return;
+                return null;
             }
+
+
+            System.out.println("Results for \"" + query + "\":");
 
             // Loop through results
             for (int i = 0; i < results.length(); i++) {
@@ -163,22 +141,24 @@ public class autoShow {
 
             // make sure choice is in valid range based on number of results
             while (choice < 0 || choice > results.length()){
-                System.out.print("ERROR: Choice must be int between 0-" + results.length() + ", try again" + "\nCHOICE:");
+                System.out.print("ERROR: Choice must be int between 0-" + results.length() + ", try again\n" + "\nCHOICE:");
                 choice = input.nextInt();
                 input.nextLine();
             }
 
             if (choice == 0) {
                 System.out.println("Show not selected.");
-                return;
+                manualShow.main(new String[0]);
+                return null;
             }
 
             JSONObject selectedShow = results.getJSONObject(choice - 1);
-            createShowObj(selectedShow);
-            
+            Show toReturn = createShowObj(selectedShow);
+            return toReturn;
 
         } else {
             System.out.println("Error: " + response.statusCode() + " ☹");
+            return null;
         }
     }
 
@@ -186,7 +166,7 @@ public class autoShow {
 
 
     
-    public static void createMovieObj(JSONObject movie) throws Exception{
+    public static Movie createMovieObj(JSONObject movie) throws Exception{
         String title = movie.optString("title", "Unknown Title");
         int year = movie.optInt("year", 0);
         int id = movie.getJSONObject("ids").getInt("simkl_id");
@@ -217,18 +197,21 @@ public class autoShow {
 
 
             Movie movieOBJ = new Movie(title, year, director, runtime, id);
-            System.out.println(movieOBJ);
+            System.out.println(movieOBJ + "\n");
 
             
+            return movieOBJ;
 
         } else {
             System.out.println("Error getting movie details. ☹");
+            return null;
         }
+        
     }
 
 
 
-    public static void createShowObj(JSONObject show) throws Exception {
+    public static Show createShowObj(JSONObject show) throws Exception {
         String title = show.optString("title", "Unknown Title");
         int year = show.optInt("year", 0);
         int id = show.getJSONObject("ids").getInt("simkl_id");
@@ -246,7 +229,6 @@ public class autoShow {
 
         if (response.statusCode() == 200) {
             JSONObject showInfo = new JSONObject(response.body());
-            System.out.println(showInfo);
 
             // Get seasons info
             String seasonsUrl = "https://api.simkl.com/tv/" + id + "/seasons";
@@ -284,10 +266,13 @@ public class autoShow {
 
             int seasons = episodesPerSeason.length;
             Show showOBJ = new Show(title, year, seasons, episodesPerSeason, id);
-            System.out.println(showOBJ);
+            System.out.println(showOBJ + "\n");
+
+            return showOBJ;
 
         } else {
             System.out.println("Error getting show details. Status: " + response.statusCode());
+            return null;
         }
     }
 }

@@ -68,6 +68,35 @@ public class list {
             stmt.execute(createShows);
             stmt.execute(createSeasons);
         }
+
+        ensureColumnExists(conn, "shows", "year", "INTEGER");
+        ensureColumnExists(conn, "shows", "avg_episode_length_mins", "INTEGER");
+        ensureColumnExists(conn, "shows", "director", "TEXT");
+        ensureColumnExists(conn, "shows", "simkl_id", "INTEGER");
+        ensureColumnExists(conn, "shows", "date_entered", "TEXT");
+        ensureColumnExists(conn, "shows", "last_updated", "TEXT");
+    }
+
+    static void ensureColumnExists(Connection conn, String table, String column, String type) throws SQLException {
+        String pragma = "PRAGMA table_info(" + table + ")";
+        boolean exists = false;
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(pragma)) {
+            while (rs.next()) {
+                if (column.equalsIgnoreCase(rs.getString("name"))) {
+                    exists = true;
+                    break;
+                }
+            }
+        }
+
+        if (!exists) {
+            String sql = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + type;
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(sql);
+            }
+        }
     }
 
     static int insertShow(Connection conn, String name, String abbreviation,
