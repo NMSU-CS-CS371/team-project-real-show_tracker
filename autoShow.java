@@ -17,13 +17,10 @@ public class autoShow {
     }
 
 
-    public static Movie searchMovie(String query) throws Exception {
-        Scanner input = new Scanner(System.in);
-
+    public static JSONArray searchMovie(String query) throws Exception {
         // Encode the search string
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         String url = "https://api.simkl.com/search/movie?q=" + encodedQuery;
-
 
         // HTTP JAVA DOCUMENTATION: https://docs.oracle.com/en/java/javase/23/docs/api/java.net.http/java/net/http/HttpClient.html
         HttpClient client = HttpClient.newHttpClient(); // Create HTTP client
@@ -42,48 +39,12 @@ public class autoShow {
         if (response.statusCode() == 200) {
 
             JSONArray results = new JSONArray(response.body());
+            System.out.println(results);
 
-            if (results.length() == 0) {
-                System.out.println("No movies found.");
-                return null;
-            }
-
-            System.out.println("Results for \"" + query + "\":");
-
-            // Loop through results
-            for (int i = 0; i < results.length(); i++) {
-                JSONObject movieObj = results.getJSONObject(i);
-
-                String title = movieObj.optString("title", "Unknown Title");
-                int year = movieObj.optInt("year", 0);
-                int id = movieObj.getJSONObject("ids").getInt("simkl_id");
-
-                System.out.println((i + 1) + " - " + title + " (" + year + ")" + "     (SIMKL_ID: " + id + ")");
-            }
-            System.out.print("\nCHOICE (0 if movie is not listed): ");
-            int choice = input.nextInt();
-            input.nextLine(); // consume newline
-
-            // make sure choice is in valid range based on number of results
-            while (choice < 0 || choice > results.length()){
-                System.out.print("ERROR: Choice must be int between 0-" + results.length() + ", try again\n" + "\nCHOICE: ");
-                choice = input.nextInt();
-                input.nextLine();
-            }
-
-            if (choice == 0) {
-                System.out.println("Movie not selected.\n");
-                manualShow.main(new String[0]);
-                return null;
-            }
-
-            JSONObject selectedMovie = results.getJSONObject(choice - 1);
-            Movie toReturn = createMovieObj(selectedMovie);
-            return toReturn;
-
+            return results;
         } else {
             System.out.println("Error: " + response.statusCode() + " ☹");
-            return null;
+            return new JSONArray();
         }
     }
 
@@ -91,6 +52,7 @@ public class autoShow {
 
 
 
+    /*
     public static Show searchShow(String query) throws Exception {
         Scanner input = new Scanner(System.in);
 
@@ -161,6 +123,7 @@ public class autoShow {
             return null;
         }
     }
+    */
 
     
 
@@ -204,13 +167,14 @@ public class autoShow {
 
         } else {
             System.out.println("Error getting movie details. ☹");
+            
             return null;
         }
-        
     }
 
 
 
+    /*
     public static Show createShowObj(JSONObject show) throws Exception {
         String title = show.optString("title", "Unknown Title");
         int year = show.optInt("year", 0);
@@ -275,4 +239,5 @@ public class autoShow {
             return null;
         }
     }
+    */
 }
