@@ -50,8 +50,27 @@
                 <h2>Viewing Habits (This Month)</h2>
             </div>
             <div class="glass-panel">
-                <div id="calendarGrid" class="calendar-grid">
+                <!-- Calendar nav -->
+                <div class="calendar-nav">
+                    <button class="cal-nav-btn" id="calPrev">&#8592;</button>
+                    <div class="cal-nav-center">
+                        <span id="calMonthLabel" class="cal-month-label"></span>
+                        <button class="cal-today-btn" id="calToday">Today</button>
                     </div>
+                    <button class="cal-nav-btn" id="calNext">&#8594;</button>
+                </div>
+                <!-- Day labels -->
+                <div class="calendar-grid" id="calDayLabels">
+                    <div class="cal-day-label">Sun</div>
+                    <div class="cal-day-label">Mon</div>
+                    <div class="cal-day-label">Tue</div>
+                    <div class="cal-day-label">Wed</div>
+                    <div class="cal-day-label">Thu</div>
+                    <div class="cal-day-label">Fri</div>
+                    <div class="cal-day-label">Sat</div>
+                </div>
+                <!-- Day cells populated by JS -->
+                <div id="calendarGrid" class="calendar-grid"></div>
             </div>
         </div>
     </div>
