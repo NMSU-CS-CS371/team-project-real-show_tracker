@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Tracker - Premium Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Show Tracker</h1>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" class="search-bar" placeholder="Search movies or shows...">
+            <button id="searchBtn" class="primary-btn">Search Database</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="column">
+            <div class="header-flex">
+                <h2>Discovery</h2>
+                <button class="text-btn" id="toggleManualBtn">+ Manual Entry</button>
+            </div>
+            
+            <div id="manualAddForm" class="manual-form glass-panel">
+                <h4 style="margin: 0; color: #a1a1aa;">Manual Injection</h4>
+                <input type="text" id="manTitle" placeholder="Title (Required)">
+                <input type="number" id="manRuntime" placeholder="Runtime in Minutes (Required)">
+                <input type="text" id="manGenre" placeholder="Genre (Optional)">
+                <button class="add-btn" id="injectManualBtn">Inject to State</button>
+            </div>
+
+            <div id="resultsContainer" class="results-scroll">
+                <p class="placeholder-text">Awaiting search query...</p>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="header-flex">
+                <h2>Active Roster</h2>
+                <div class="watch-time" id="totalTimeDisplay">Total Time: 0h 0m</div>
+            </div>
+            
+            <div id="watchlistContainer" class="watchlist-scroll">
+                <p class="placeholder-text">Your roster is empty.</p>
+            </div>
+
+            <div class="header-flex" style="margin-top: 30px;">
+                <h2>Viewing Habits (This Month)</h2>
+            </div>
+            <div class="glass-panel">
+                <!-- Calendar nav -->
+                <div class="calendar-nav">
+                    <button class="cal-nav-btn" id="calPrev">&#8592;</button>
+                    <div class="cal-nav-center">
+                        <span id="calMonthLabel" class="cal-month-label"></span>
+                        <button class="cal-today-btn" id="calToday">Today</button>
+                    </div>
+                    <button class="cal-nav-btn" id="calNext">&#8594;</button>
+                </div>
+                <!-- Day labels -->
+                <div class="calendar-grid" id="calDayLabels">
+                    <div class="cal-day-label">Sun</div>
+                    <div class="cal-day-label">Mon</div>
+                    <div class="cal-day-label">Tue</div>
+                    <div class="cal-day-label">Wed</div>
+                    <div class="cal-day-label">Thu</div>
+                    <div class="cal-day-label">Fri</div>
+                    <div class="cal-day-label">Sat</div>
+                </div>
+                <!-- Day cells populated by JS -->
+                <div id="calendarGrid" class="calendar-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app2.js"></script>
+</body>
+</html>
